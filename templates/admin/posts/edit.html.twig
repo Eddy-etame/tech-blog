@@ -1,0 +1,40 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Modifier l'article - Admin{% endblock %}
+
+{% block admin_content %}
+    <h1>Modifier l'article</h1>
+
+    {{ form_start(form, {'attr': {'class': 'post-form'}}) }}
+        {{ form_errors(form) }}
+
+        <div class="form-group">
+            {{ form_label(form.title) }}
+            {{ form_widget(form.title) }}
+            {{ form_errors(form.title) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.excerpt) }}
+            {{ form_widget(form.excerpt) }}
+            {{ form_errors(form.excerpt) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.content) }}
+            {{ form_widget(form.content) }}
+            {{ form_errors(form.content) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.status) }}
+            {{ form_widget(form.status) }}
+            {{ form_errors(form.status) }}
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn">Enregistrer</button>
+            <a href="{{ path('admin_posts_all') }}" class="btn btn-secondary">Annuler</a>
+        </div>
+    {{ form_end(form) }}
+{% endblock %}

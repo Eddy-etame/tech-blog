@@ -1,0 +1,44 @@
+{% extends 'blogger/base.html.twig' %}
+
+{% block title %}Mes articles - Blogger{% endblock %}
+
+{% block dashboard_content %}
+    <h1>Mes articles</h1>
+
+    <p><a href="{{ path('blogger_post_new') }}" class="btn">Nouvel article</a></p>
+
+    {% if posts|length > 0 %}
+        <div class="dashboard-table-wrapper">
+            {% for post in posts %}
+                <article class="pending-post-card">
+                    <div class="pending-post-header">
+                        <h3><a href="{{ path('app_post_show', { id: post.id }) }}">{{ post.title }}</a></h3>
+                        <span class="status-badge status-{{ post.status }}">{{ post.status }}</span>
+                    </div>
+                    {% if post.rejectionReason %}
+                        <p class="alert-error" style="margin:0.5rem 0;">Rejeté : {{ post.rejectionReason }}</p>
+                    {% endif %}
+                    <p class="pending-post-meta">{{ post.publishedAt|date('d/m/Y H:i') }}</p>
+                    <div class="pending-post-actions">
+                        {% if post.status in ['draft', 'rejected'] %}
+                            <a href="{{ path('blogger_post_edit', { id: post.id }) }}" class="btn">Modifier</a>
+                            <form method="post" action="{{ path('blogger_post_submit', { id: post.id }) }}" style="display:inline;">
+                                <input type="hidden" name="_csrf_token" value="{{ csrf_token('blogger_post_submit_' ~ post.id) }}">
+                                <button type="submit" class="btn">Soumettre</button>
+                            </form>
+                        {% endif %}
+                        {% if post.status in ['draft', 'pending', 'rejected'] %}
+                            <form method="post" action="{{ path('blogger_post_delete', { id: post.id }) }}" style="display:inline;"
+                                onsubmit="return confirm('Supprimer cet article ?');">
+                                <input type="hidden" name="_csrf_token" value="{{ csrf_token('blogger_post_delete_' ~ post.id) }}">
+                                <button type="submit" class="btn btn-secondary">Supprimer</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="empty-state">Aucun article. <a href="{{ path('blogger_post_new') }}">Créer un article</a></p>
+    {% endif %}
+{% endblock %}

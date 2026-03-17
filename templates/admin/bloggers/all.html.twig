@@ -1,0 +1,54 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Tous les bloggers - Admin{% endblock %}
+
+{% block admin_content %}
+    <h1>Tous les bloggers</h1>
+
+    {% if users|length > 0 %}
+        <div class="dashboard-table-wrapper">
+            <table class="dashboard-table">
+                <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th>Nom</th>
+                        <th>Statut</th>
+                        <th>Bloqué</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                        <tr>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.author ? user.author.firstName ~ ' ' ~ user.author.lastName : '-' }}</td>
+                            <td>
+                                <span class="status-badge status-{{ user.isVerified ? 'published' : 'pending' }}">
+                                    {{ user.isVerified ? 'Validé' : 'Non validé' }}
+                                </span>
+                            </td>
+                            <td>{{ user.isBlocked ? 'Oui' : 'Non' }}</td>
+                            <td class="actions-cell">
+                                {% if not user.isVerified %}
+                                    <form method="post" action="{{ path('admin_blogger_approve', { id: user.id }) }}" style="display:inline;">
+                                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('admin_blogger_approve_' ~ user.id) }}">
+                                        <button type="submit" class="btn btn-secondary" style="padding:0.35rem 0.6rem;font-size:0.85rem;">Approuver</button>
+                                    </form>
+                                {% endif %}
+                                <form method="post" action="{{ path('admin_blogger_block', { id: user.id }) }}" style="display:inline;"
+                                    onsubmit="return confirm('{{ user.isBlocked ? 'Débloquer' : 'Bloquer' }} ce blogger ?');">
+                                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('admin_blogger_block_' ~ user.id) }}">
+                                    <button type="submit" class="btn btn-secondary" style="padding:0.35rem 0.6rem;font-size:0.85rem;">
+                                        {{ user.isBlocked ? 'Débloquer' : 'Bloquer' }}
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p class="empty-state">Aucun blogger.</p>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil - Tech Blog{% endblock %}
+
+{% block body %}
+    <section class="hero">
+        <h1>Bienvenue sur Tech Blog</h1>
+        <p class="hero-subtitle">Actualités tech : IA, Angular, Symfony et avancées récentes</p>
+        <form action="{{ path('app_index') }}" method="get" class="search-form hero-search">
+            <input type="search" name="q" value="{{ search|default('') }}" placeholder="Rechercher un article tech...">
+            <button type="submit" class="btn">Rechercher</button>
+        </form>
+    </section>
+
+    <section>
+        <h2>Articles{% if search %} ({{ total }} résultat{% if total > 1 %}s{% endif %}){% endif %}</h2>
+        {% for post in posts %}
+            <article>
+                <h3><a href="{{ path('app_post_show', { id: post.id }) }}">{{ post.title }}</a></h3>
+                <p>
+                    Par {{ post.author ? post.author.firstName ~ ' ' ~ post.author.lastName : 'Anonyme' }}
+                </p>
+                <p>Publié le {{ post.publishedAt ? post.publishedAt|date('d/m/Y') : 'N/A' }}</p>
+                <p>{{ post.excerpt ?: (post.content|length > 200 ? (post.content|slice(0, 200) ~ '...') : post.content) }}</p>
+            </article>
+        {% else %}
+            <p>Aucun article pour le moment{% if search %}. Essayez une autre recherche.{% endif %}</p>
+        {% endfor %}
+    </section>
+
+    {% if pages > 1 %}
+        <nav class="pagination" aria-label="Pagination des articles">
+            <span class="pagination-label">Page {{ current_page }} sur {{ pages }}</span>
+            {% if current_page > 1 %}
+                <a href="{{ path('app_index', { page: current_page - 1, q: search }) }}" aria-label="Page précédente">&larr; Précédent</a>
+            {% endif %}
+            {% for p in 1..pages %}
+                {% if p == current_page %}
+                    <span class="current" aria-current="page">{{ p }}</span>
+                {% else %}
+                    <a href="{{ path('app_index', { page: p, q: search }) }}" aria-label="Page {{ p }}">{{ p }}</a>
+                {% endif %}
+            {% endfor %}
+            {% if current_page < pages %}
+                <a href="{{ path('app_index', { page: current_page + 1, q: search }) }}" aria-label="Page suivante">Suivant &rarr;</a>
+            {% endif %}
+        </nav>
+    {% endif %}
+{% endblock %}

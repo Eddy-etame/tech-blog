@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion admin - Tech Blog{% endblock %}
+
+{% block body %}
+    <section class="auth-section">
+        <h1>Administration</h1>
+        <p class="auth-subtitle">Connectez-vous pour accéder à l'administration</p>
+
+        {% for message in app.flashes('error') %}
+            <div class="alert-error">{{ message }}</div>
+        {% endfor %}
+
+        <form method="post" action="{{ path('admin_login_check') }}" class="auth-form">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+            <div class="form-group">
+                <label for="username">Email</label>
+                <input type="email" id="username" name="_username" value="{{ last_username }}" required autofocus autocomplete="email"
+                    placeholder="votre@email.com">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Mot de passe</label>
+                <input type="password" id="password" name="_password" required autocomplete="current-password"
+                    placeholder="••••••••">
+            </div>
+
+            <div class="form-group form-group-checkbox">
+                <label>
+                    <input type="checkbox" name="_remember_me"> Se souvenir de moi
+                </label>
+            </div>
+
+            <button type="submit" class="btn">Se connecter</button>
+        </form>
+
+        <p class="auth-footer">
+            <a href="{{ path('app_index') }}">Retour au site</a>
+        </p>
+    </section>
+{% endblock %}

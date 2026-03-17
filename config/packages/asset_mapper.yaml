@@ -1,0 +1,12 @@
+framework:
+    asset_mapper:
+        # The paths to make available to the asset mapper.
+        paths:
+            - assets/
+        # Use 'warn' in dev to avoid blocking on unresolved imports (e.g. Stimulus controller paths)
+        missing_import_mode: warn
+
+when@prod:
+    framework:
+        asset_mapper:
+            missing_import_mode: warn

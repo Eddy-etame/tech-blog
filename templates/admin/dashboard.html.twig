@@ -1,0 +1,67 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Tableau de bord - Admin{% endblock %}
+
+{% block dashboard_content %}
+    <h1>Tableau de bord</h1>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <span class="stat-number">{{ totalPosts }}</span>
+            <span class="stat-label">Articles au total</span>
+        </div>
+        <div class="stat-card stat-card-accent">
+            <span class="stat-number">{{ pendingPosts }}</span>
+            <span class="stat-label">En attente de validation</span>
+        </div>
+        <div class="stat-card stat-card-accent">
+            <span class="stat-number">{{ pendingBloggers }}</span>
+            <span class="stat-label">Bloggers en attente</span>
+        </div>
+    </div>
+
+    <section class="dashboard-section">
+        <h2>Articles récents</h2>
+        {% if recentPosts|length > 0 %}
+            <div class="dashboard-table-wrapper">
+                <table class="dashboard-table">
+                    <thead>
+                        <tr>
+                            <th>Titre</th>
+                            <th>Statut</th>
+                            <th>Date</th>
+                            <th>Auteur</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for post in recentPosts %}
+                            <tr>
+                                <td><a href="{{ path('app_post_show', { id: post.id }) }}">{{ post.title }}</a></td>
+                                <td><span class="status-badge status-{{ post.status }}">{{ post.status }}</span></td>
+                                <td>{{ post.publishedAt|date('d/m/Y') }}</td>
+                                <td>{{ post.author ? post.author.firstName ~ ' ' ~ post.author.lastName : '-' }}</td>
+                                <td class="actions-cell">
+                                    <a href="{{ path('admin_post_edit', { id: post.id }) }}" class="btn btn-secondary" style="padding:0.35rem 0.6rem;font-size:0.85rem;">Modifier</a>
+                                    <form method="post" action="{{ path('admin_post_delete', { id: post.id }) }}" style="display:inline;"
+                                        onsubmit="return confirm('Supprimer cet article ?');">
+                                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('admin_post_delete_' ~ post.id) }}">
+                                        <button type="submit" class="btn btn-secondary" style="padding:0.35rem 0.6rem;font-size:0.85rem;">Supprimer</button>
+                                    </form>
+                                    {% if post.status == 'pending' %}
+                                        <form method="post" action="{{ path('admin_post_approve', { id: post.id }) }}" style="display:inline;">
+                                            <input type="hidden" name="_csrf_token" value="{{ csrf_token('admin_post_approve_' ~ post.id) }}">
+                                            <button type="submit" class="btn" style="padding:0.35rem 0.6rem;font-size:0.85rem;">Approuver</button>
+                                        </form>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="empty-state">Aucun article.</p>
+        {% endif %}
+    </section>
+{% endblock %}

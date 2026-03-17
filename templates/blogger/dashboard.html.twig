@@ -1,0 +1,67 @@
+{% extends 'blogger/base.html.twig' %}
+
+{% block title %}Tableau de bord - Blogger{% endblock %}
+
+{% block dashboard_content %}
+    <h1>Tableau de bord</h1>
+
+    {% if not app.user.isVerified %}
+        <div class="alert-error">
+            Votre compte n'est pas encore validé par un administrateur. Vous ne pouvez pas publier d'articles pour le moment.
+        </div>
+    {% endif %}
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <span class="stat-number">{{ myPosts|length }}</span>
+            <span class="stat-label">Mes articles</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-number">{{ draftsCount }}</span>
+            <span class="stat-label">Brouillons</span>
+        </div>
+        <div class="stat-card stat-card-accent">
+            <span class="stat-number">{{ pendingCount }}</span>
+            <span class="stat-label">En attente</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-number">{{ publishedCount }}</span>
+            <span class="stat-label">Publiés</span>
+        </div>
+    </div>
+
+    <section class="dashboard-section">
+        <h2>Mes articles récents</h2>
+        {% if myPosts|length > 0 %}
+            <div class="dashboard-table-wrapper">
+                <table class="dashboard-table">
+                    <thead>
+                        <tr>
+                            <th>Titre</th>
+                            <th>Statut</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for post in myPosts|slice(0, 10) %}
+                            <tr>
+                                <td><a href="{{ path('app_post_show', { id: post.id }) }}">{{ post.title }}</a></td>
+                                <td><span class="status-badge status-{{ post.status }}">{{ post.status }}</span></td>
+                                <td>{{ post.publishedAt|date('d/m/Y') }}</td>
+                                <td>
+                                    {% if post.status in ['draft', 'pending', 'rejected'] %}
+                                        <a href="{{ path('blogger_post_edit', { id: post.id }) }}" class="btn btn-secondary" style="padding:0.35rem 0.6rem;font-size:0.85rem;">Modifier</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <p><a href="{{ path('blogger_posts') }}" class="btn btn-secondary">Voir tous mes articles</a></p>
+        {% else %}
+            <p class="empty-state">Vous n'avez pas encore d'articles. <a href="{{ path('blogger_post_new') }}">Créer un article</a></p>
+        {% endif %}
+    </section>
+{% endblock %}

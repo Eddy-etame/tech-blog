@@ -1,0 +1,11 @@
+<div class="comment-form" id="comment-form-wrapper">
+    <h3>Ajouter un commentaire</h3>
+    {{ form_start(form, {'action': path('app_post_show', {id: post.id}), 'method': 'POST', 'attr': {'data-turbo': 'false', 'data-controller': 'comment-form', 'data-action': 'submit.prevent->comment-form#handleSubmit'}}) }}
+    {{ form_errors(form) }}
+    {{ form_row(form.authorName) }}
+    {{ form_row(form.content) }}
+    <button type="submit" class="btn" data-comment-form-target="submitBtn">
+        <span class="btn-text" data-comment-form-target="btnText">Publier</span>
+    </button>
+    {{ form_end(form) }}
+</div>

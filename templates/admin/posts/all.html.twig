@@ -1,0 +1,51 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Tous les articles - Admin{% endblock %}
+
+{% block dashboard_content %}
+    <h1>Tous les articles</h1>
+
+    <div class="filter-bar">
+        <a href="{{ path('admin_posts_all') }}" class="btn btn-secondary{% if not currentStatus %} active{% endif %}">Tous</a>
+        <a href="{{ path('admin_posts_all', { status: 'draft' }) }}" class="btn btn-secondary{% if currentStatus == 'draft' %} active{% endif %}">Brouillons</a>
+        <a href="{{ path('admin_posts_all', { status: 'pending' }) }}" class="btn btn-secondary{% if currentStatus == 'pending' %} active{% endif %}">En attente</a>
+        <a href="{{ path('admin_posts_all', { status: 'published' }) }}" class="btn btn-secondary{% if currentStatus == 'published' %} active{% endif %}">Publiés</a>
+        <a href="{{ path('admin_posts_all', { status: 'rejected' }) }}" class="btn btn-secondary{% if currentStatus == 'rejected' %} active{% endif %}">Rejetés</a>
+    </div>
+
+    {% if posts|length > 0 %}
+        <div class="dashboard-table-wrapper">
+            <table class="dashboard-table">
+                <thead>
+                    <tr>
+                        <th>Titre</th>
+                        <th>Statut</th>
+                        <th>Date</th>
+                        <th>Auteur</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for post in posts %}
+                        <tr>
+                            <td><a href="{{ path('app_post_show', { id: post.id }) }}">{{ post.title }}</a></td>
+                            <td><span class="status-badge status-{{ post.status }}">{{ post.status }}</span></td>
+                            <td>{{ post.publishedAt|date('d/m/Y') }}</td>
+                            <td>{{ post.author ? post.author.firstName ~ ' ' ~ post.author.lastName : '-' }}</td>
+                            <td class="actions-cell">
+                                <a href="{{ path('admin_post_edit', { id: post.id }) }}" class="btn btn-secondary" style="padding:0.35rem 0.6rem;font-size:0.85rem;">Modifier</a>
+                                <form method="post" action="{{ path('admin_post_delete', { id: post.id }) }}" style="display:inline;"
+                                    onsubmit="return confirm('Supprimer cet article ?');">
+                                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('admin_post_delete_' ~ post.id) }}">
+                                    <button type="submit" class="btn btn-secondary" style="padding:0.35rem 0.6rem;font-size:0.85rem;">Supprimer</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p class="empty-state">Aucun article.</p>
+    {% endif %}
+{% endblock %}

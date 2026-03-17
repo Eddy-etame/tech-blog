@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script>
+            (function(){
+                var t;try{t=localStorage.getItem('theme');}catch(e){}
+                if(!t||(t!=='light'&&t!=='dark')){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches)?'light':'dark';}
+                document.documentElement.setAttribute('data-theme',t||'dark');
+            })();
+        </script>
+        <script>
+            (function(){
+                function attach(){
+                    var btn=document.getElementById('theme-toggle');
+                    if(!btn)return;
+                    btn.onclick=function(){
+                        var r=document.documentElement;
+                        var c=r.getAttribute('data-theme')||'dark';
+                        var n=c==='dark'?'light':'dark';
+                        r.setAttribute('data-theme',n);
+                        try{localStorage.setItem('theme',n);}catch(e){}
+                    };
+                }
+                if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',attach);}else{attach();}
+                document.addEventListener('turbo:load',attach);
+            })();
+        </script>
+        <script>
+            (function(){
+                function handleBackToTop(){
+                    var btn=document.getElementById('back-to-top');
+                    if(!btn)return;
+                    function update(){
+                        if(window.scrollY>400){btn.classList.add('visible');}else{btn.classList.remove('visible');}
+                    }
+                    btn.onclick=function(){window.scrollTo({top:0,behavior:'smooth'});};
+                    window.addEventListener('scroll',update,{passive:true});
+                    update();
+                }
+                if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',handleBackToTop);}else{handleBackToTop();}
+                document.addEventListener('turbo:load',handleBackToTop);
+            })();
+        </script>
+        <script>
+            (function(){
+                function handleReadingProgress(){
+                    var bar=document.querySelector('.reading-progress-bar');
+                    if(!bar)return;
+                    function update(){
+                        var scrollTop=window.scrollY;
+                        var docHeight=document.documentElement.scrollHeight-window.innerHeight;
+                        var pct=docHeight>0?Math.min(100,(scrollTop/docHeight)*100):0;
+                        bar.style.width=pct+'%';
+                    }
+                    requestAnimationFrame(function(){
+                        window.addEventListener('scroll',update,{passive:true});
+                        update();
+                    });
+                }
+                function run(){
+                    if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',run);return;}
+                    handleReadingProgress();
+                }
+                run();
+                document.addEventListener('turbo:load',handleReadingProgress);
+                document.addEventListener('turbo:render',handleReadingProgress);
+            })();
+        </script>
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+        {% block stylesheets %}
+        <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
+        {% endblock %}
+
+        {% block javascripts %}
+            {% block importmap %}{{ importmap('app') }}{% endblock %}
+        {% endblock %}
+    </head>
+    <body>
+        <a href="#main-content" class="skip-link">Aller au contenu</a>
+        {% block header %}
+        <header>
+            <a href="{{ path('app_index') }}" class="logo">Tech Blog</a>
+            <nav>
+                <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Changer de thème">
+                    <span class="icon-dark" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></span>
+                    <span class="icon-light" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span>
+                </button>
+                <a href="{{ path('app_index') }}"{% if app.request.attributes.get('_route') == 'app_index' %} class="nav-active"{% endif %}>Accueil</a>
+                <a href="{{ path('app_about') }}"{% if app.request.attributes.get('_route') == 'app_about' %} class="nav-active"{% endif %}>À propos</a>
+                <a href="{{ path('app_legal') }}"{% if app.request.attributes.get('_route') == 'app_legal' %} class="nav-active"{% endif %}>Mentions légales</a>
+                {% if app.user %}
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <a href="{{ path('admin_dashboard') }}">Admin</a>
+                    {% else %}
+                        <a href="{{ path('app_alert_list') }}"{% if app.request.attributes.get('_route') == 'app_alert_list' %} class="nav-active"{% endif %}>Mes alertes</a>
+                        <a href="{{ path('app_user_dashboard') }}"{% if app.request.attributes.get('_route') == 'app_user_dashboard' %} class="nav-active"{% endif %}>Mon espace</a>
+                        {% if is_granted('ROLE_BLOGGER') %}
+                            <a href="{{ path('blogger_dashboard') }}"{% if app.request.attributes.get('_route') starts with 'blogger_' %} class="nav-active"{% endif %}>Espace blogger</a>
+                        {% endif %}
+                    {% endif %}
+                    <form method="post" action="{{ path('app_logout') }}" style="display:inline;">
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+                        <button type="submit" class="btn btn-secondary" style="padding:0.35rem 0.6rem;font-size:0.9rem;">Déconnexion</button>
+                    </form>
+                {% else %}
+                    <a href="{{ path('app_login') }}">Connexion</a>
+                    <a href="{{ path('app_register') }}">Inscription</a>
+                    <a href="{{ path('blogger_login') }}">Espace blogger</a>
+                {% endif %}
+            </nav>
+        </header>
+        {% endblock %}
+        {% block reading_progress %}{% endblock %}
+        <main id="main-content">
+            {% for message in app.flashes('success') %}
+                <div class="alert-success">{{ message }}</div>
+            {% endfor %}
+            {% for message in app.flashes('error') %}
+                <div class="alert-error">{{ message }}</div>
+            {% endfor %}
+            {% block body %}{% endblock %}
+        </main>
+        <footer>
+            <div class="footer-inner">
+                <p>&copy; {{ "now"|date("Y") }} Tech Blog. Tous droits réservés.</p>
+                <nav>
+                    <a href="{{ path('app_index') }}"{% if app.request.attributes.get('_route') == 'app_index' %} class="nav-active"{% endif %}>Accueil</a>
+                    <a href="{{ path('app_about') }}"{% if app.request.attributes.get('_route') == 'app_about' %} class="nav-active"{% endif %}>À propos</a>
+                    <a href="{{ path('app_legal') }}"{% if app.request.attributes.get('_route') == 'app_legal' %} class="nav-active"{% endif %}>Mentions légales</a>
+                </nav>
+            </div>
+        </footer>
+        <button type="button" id="back-to-top" class="back-to-top" aria-label="Retour en haut">↑</button>
+        <script>
+            (function(){
+                function handleCommentFormSubmit(e){
+                    var form=e.target.closest('#comment-form-wrapper form');
+                    if(!form||!form.getAttribute('data-controller')||form.getAttribute('data-controller').indexOf('comment-form')===-1)return;
+                    if(e.defaultPrevented)return;
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                    var formData=new FormData(form);
+                    var action=form.action;
+                    var submitBtn=form.querySelector('button[type="submit"]');
+                    if(submitBtn){submitBtn.classList.add('btn-loading');submitBtn.disabled=true;}
+                    var section=document.getElementById('comments-section');
+                    var clearErr=function(){var ex=section?section.querySelector('.alert-error'):null;if(ex)ex.remove();};
+                    clearErr();
+                    fetch(action,{method:'POST',body:formData,headers:{'X-Requested-With':'XMLHttpRequest','Accept':'application/json'}})
+                        .then(function(r){return r.json().catch(function(){return{};}).then(function(d){return{ok:r.ok,data:d};});})
+                        .then(function(res){
+                            if(!res.ok){
+                                var wrapper=document.getElementById('comment-form-wrapper');
+                                if(wrapper&&res.data.formHtml){
+                                    wrapper.outerHTML=res.data.formHtml;
+                                    var newWrap=document.getElementById('comment-form-wrapper');
+                                    if(newWrap){
+                                        newWrap.scrollIntoView({behavior:'smooth',block:'nearest'});
+                                        var inp=newWrap.querySelector('input, textarea');
+                                        if(inp)inp.focus();
+                                    }
+                                }
+                                if(section&&res.data.error){
+                                    var err=document.createElement('div');
+                                    err.className='alert-error';
+                                    err.textContent=res.data.error;
+                                    section.insertBefore(err,section.firstChild);
+                                }
+                                return;
+                            }
+                            var empty=document.getElementById('comments-empty');
+                            if(empty)empty.remove();
+                            var list=document.getElementById('comments-list');
+                            if(list&&res.data.commentHtml){
+                                var div=document.createElement('div');
+                                div.innerHTML=res.data.commentHtml.trim();
+                                var newComment=div.firstChild;
+                                list.appendChild(newComment);
+                                newComment.classList.add('comment-added');
+                                setTimeout(function(){newComment.classList.remove('comment-added');},2000);
+                                newComment.scrollIntoView({behavior:'smooth',block:'nearest'});
+                            }
+                            var formWrapper=document.getElementById('comment-form-wrapper');
+                            if(formWrapper&&res.data.formHtml){
+                                formWrapper.outerHTML=res.data.formHtml;
+                                var newWrapper=document.getElementById('comment-form-wrapper');
+                                if(newWrapper){var firstInp=newWrapper.querySelector('input, textarea');if(firstInp)firstInp.focus();}
+                            }
+                        })
+                        .catch(function(){
+                            if(section){
+                                var err=document.createElement('div');
+                                err.className='alert-error';
+                                err.textContent='Une erreur s\'est produite. Veuillez réessayer.';
+                                section.insertBefore(err,section.firstChild);
+                            }
+                        })
+                        .finally(function(){
+                            if(submitBtn){submitBtn.classList.remove('btn-loading');submitBtn.disabled=false;}
+                        });
+                }
+                document.addEventListener('submit',handleCommentFormSubmit,true);
+            })();
+        </script>
+    </body>
+</html>

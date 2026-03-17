@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="dashboard-layout">
+        <aside class="dashboard-sidebar">
+            <a href="{{ path('blogger_dashboard') }}" class="sidebar-logo">Tech Blog</a>
+            <nav class="sidebar-nav">
+                <a href="{{ path('blogger_dashboard') }}"{% if app.request.attributes.get('_route') == 'blogger_dashboard' %} class="nav-active"{% endif %}>Tableau de bord</a>
+                <a href="{{ path('blogger_posts') }}"{% if app.request.attributes.get('_route') in ['blogger_posts', 'blogger_post_edit', 'blogger_post_submit', 'blogger_post_delete'] %} class="nav-active"{% endif %}>Mes articles</a>
+                <a href="{{ path('blogger_post_new') }}"{% if app.request.attributes.get('_route') == 'blogger_post_new' %} class="nav-active"{% endif %}>Nouvel article</a>
+                <a href="{{ path('blogger_profile') }}"{% if app.request.attributes.get('_route') == 'blogger_profile' %} class="nav-active"{% endif %}>Mon profil</a>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="{{ path('app_index') }}">Voir le site</a>
+                <form method="post" action="{{ path('blogger_logout') }}" class="logout-form">
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+                    <button type="submit" class="btn btn-secondary">Déconnexion</button>
+                </form>
+            </div>
+        </aside>
+        <main class="dashboard-main" id="main-content">
+            {% block dashboard_content %}{% endblock %}
+        </main>
+    </div>
+{% endblock %}

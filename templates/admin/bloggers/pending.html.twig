@@ -1,0 +1,46 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Bloggers en attente - Admin{% endblock %}
+
+{% block dashboard_content %}
+    <h1>Bloggers en attente</h1>
+
+    {% if users|length > 0 %}
+        <div class="dashboard-table-wrapper">
+            <table class="dashboard-table">
+                <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th>Nom</th>
+                        <th>Date d'inscription</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                        <tr>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.author ? user.author.firstName ~ ' ' ~ user.author.lastName : '-' }}</td>
+                            <td>{{ user.createdAt|date('d/m/Y H:i') }}</td>
+                            <td><span class="status-badge status-pending">Non validé</span></td>
+                            <td class="actions-cell">
+                                <form method="post" action="{{ path('admin_blogger_approve', { id: user.id }) }}" style="display:inline;">
+                                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('admin_blogger_approve_' ~ user.id) }}">
+                                    <button type="submit" class="btn" style="padding:0.35rem 0.6rem;font-size:0.85rem;">Approuver</button>
+                                </form>
+                                <form method="post" action="{{ path('admin_blogger_reject', { id: user.id }) }}" style="display:inline;"
+                                    onsubmit="return confirm('Rejeter cette demande ? L\'utilisateur sera supprimé.');">
+                                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('admin_blogger_reject_' ~ user.id) }}">
+                                    <button type="submit" class="btn btn-secondary" style="padding:0.35rem 0.6rem;font-size:0.85rem;">Rejeter</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p class="empty-state">Aucun blogger en attente de validation.</p>
+    {% endif %}
+{% endblock %}

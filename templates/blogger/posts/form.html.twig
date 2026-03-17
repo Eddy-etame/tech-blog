@@ -1,0 +1,38 @@
+{% extends 'blogger/base.html.twig' %}
+
+{% block title %}{{ post.id ? 'Modifier' : 'Nouvel article' }} - Blogger{% endblock %}
+
+{% block dashboard_content %}
+    <h1>{{ post.id ? 'Modifier l\'article' : 'Nouvel article' }}</h1>
+
+    {{ form_start(form, {'attr': {'class': 'post-form'}}) }}
+        {{ form_errors(form) }}
+
+        <div class="form-group">
+            {{ form_label(form.title) }}
+            {{ form_widget(form.title) }}
+            {{ form_errors(form.title) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.excerpt) }}
+            {{ form_widget(form.excerpt) }}
+            {{ form_errors(form.excerpt) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.content) }}
+            {{ form_widget(form.content) }}
+            {{ form_errors(form.content) }}
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" name="action" value="draft" class="btn btn-secondary">Enregistrer en brouillon</button>
+            <button type="submit" name="action" value="submit" class="btn">Soumettre pour validation</button>
+        </div>
+    {{ form_end(form) }}
+
+    {% if post.id %}
+        <p style="margin-top:1rem;"><a href="{{ path('blogger_posts') }}" class="btn btn-secondary">Retour aux articles</a></p>
+    {% endif %}
+{% endblock %}

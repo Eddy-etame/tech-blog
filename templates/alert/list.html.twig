@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes abonnements aux auteurs - Tech Blog{% endblock %}
+
+{% block body %}
+    <h1>Mes abonnements aux auteurs</h1>
+    <p>Vous recevrez un email lorsque ces auteurs publient un nouvel article.</p>
+
+    {% if alerts|length > 0 %}
+        <ul class="alert-list">
+            {% for alert in alerts %}
+                <li class="alert-item">
+                    <span class="alert-author">{{ alert.author.firstName }} {{ alert.author.lastName }}</span>
+                    <form method="post" action="{{ path('app_alert_unsubscribe', {authorId: alert.author.id}) }}" style="display:inline;">
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('alert_unsubscribe_' ~ alert.author.id) }}">
+                        <button type="submit" class="btn btn-secondary btn-sm">Se désabonner</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Aucun abonnement. Visitez un article et cliquez sur « S'abonner aux articles de [Auteur] » pour recevoir des notifications par email.</p>
+    {% endif %}
+
+    <p><a href="{{ path('app_index') }}" class="btn btn-secondary">Retour à l'accueil</a></p>
+{% endblock %}

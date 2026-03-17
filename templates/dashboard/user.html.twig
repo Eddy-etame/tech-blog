@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon espace - Tech Blog{% endblock %}
+
+{% block body %}
+    <h1>Mon espace</h1>
+    <p>Bienvenue ! Gérez vos abonnements aux auteurs pour recevoir des notifications par email.</p>
+
+    <section class="dashboard-section">
+        <h2>Alertes</h2>
+        <p>
+            <a href="{{ path('app_alert_list') }}" class="btn">Mes alertes</a>
+            — Suivez vos auteurs favoris et recevez un email à chaque nouvel article.
+        </p>
+    </section>
+
+    <section class="dashboard-section">
+        <h2>Devenir blogger</h2>
+        <p>
+            <a href="{{ path('blogger_login') }}" class="btn btn-secondary">Devenir blogger</a>
+            — Créez un compte blogger pour publier des articles.
+        </p>
+    </section>
+
+    <p><a href="{{ path('app_index') }}" class="btn btn-secondary">Voir le blog</a></p>
+{% endblock %}
