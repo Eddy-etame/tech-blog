@@ -26,23 +26,6 @@
 
 {% block body %}
     <div class="dashboard-layout">
-        <aside class="dashboard-sidebar">
-            <a href="{{ path('admin_dashboard') }}" class="sidebar-logo">Tech Blog Admin</a>
-            <nav class="sidebar-nav">
-                <a href="{{ path('admin_dashboard') }}"{% if app.request.attributes.get('_route') == 'admin_dashboard' %} class="nav-active"{% endif %}>Tableau de bord</a>
-                <a href="{{ path('admin_posts_pending') }}"{% if app.request.attributes.get('_route') == 'admin_posts_pending' %} class="nav-active"{% endif %}>Articles en attente</a>
-                <a href="{{ path('admin_posts_all') }}"{% if app.request.attributes.get('_route') starts with 'admin_posts' and app.request.attributes.get('_route') != 'admin_posts_pending' %} class="nav-active"{% endif %}>Tous les articles</a>
-                <a href="{{ path('admin_bloggers_pending') }}"{% if app.request.attributes.get('_route') == 'admin_bloggers_pending' %} class="nav-active"{% endif %}>Bloggers en attente</a>
-                <a href="{{ path('admin_bloggers_all') }}"{% if app.request.attributes.get('_route') == 'admin_bloggers_all' %} class="nav-active"{% endif %}>Tous les bloggers</a>
-            </nav>
-            <div class="sidebar-footer">
-                <a href="{{ path('app_index') }}">Voir le site</a>
-                <form method="post" action="{{ path('admin_logout') }}" class="logout-form">
-                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
-                    <button type="submit" class="btn btn-secondary">Déconnexion</button>
-                </form>
-            </div>
-        </aside>
         <main class="dashboard-main" id="admin-main-content">
             {% block dashboard_content %}{% endblock %}
         </main>

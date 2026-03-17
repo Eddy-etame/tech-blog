@@ -1123,6 +1123,9 @@ html[data-theme="light"] .alert-error {
 
 .dashboard-table-wrapper {
     overflow-x: auto;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
 }
 
 .dashboard-table {
@@ -1130,17 +1133,44 @@ html[data-theme="light"] .alert-error {
     border-collapse: collapse;
 }
 
+.dashboard-table thead tr {
+    background: var(--color-surface-hover);
+}
+
+.dashboard-table thead th {
+    border-bottom: 2px solid var(--color-border);
+    padding: 0.85rem 1rem;
+}
+
 .dashboard-table th,
 .dashboard-table td {
     padding: 0.75rem 1rem;
     text-align: left;
     border-bottom: 1px solid var(--color-border);
+    border-right: 1px solid var(--color-border);
+}
+
+.dashboard-table th:last-child,
+.dashboard-table td:last-child {
+    border-right: none;
 }
 
 .dashboard-table th {
     color: var(--color-text-muted);
     font-weight: 500;
     font-size: 0.9rem;
+}
+
+.dashboard-table tbody tr:nth-child(even) {
+    background: rgba(0, 0, 0, 0.03);
+}
+
+html[data-theme="dark"] .dashboard-table tbody tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.dashboard-table tbody tr:hover {
+    background: var(--color-surface-hover);
 }
 
 .dashboard-table a {
@@ -1153,16 +1183,20 @@ html[data-theme="light"] .alert-error {
 
 .actions-cell {
     white-space: nowrap;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    align-items: center;
 }
 
 .actions-cell .btn,
 .actions-cell a.btn {
-    margin-right: 0.35rem;
-    margin-bottom: 0.25rem;
+    margin-right: 0;
+    margin-bottom: 0;
 }
 
 .actions-cell form {
-    display: inline;
+    display: inline-flex;
 }
 
 .status-badge {
