@@ -1,30 +1,30 @@
 # Tech Blog
 
-A full-featured tech blog built with Symfony 6.4, featuring user authentication, blogger workflows, admin moderation, email alerts, and modern JavaScript (Stimulus, Turbo).
+Un blog tech complet construit avec Symfony 6.4 : authentification utilisateur, workflows blogger, modération admin, alertes par email et JavaScript moderne (Stimulus, Turbo).
 
 ---
 
-## Table of Contents
+## Table des matières
 
-- [Technologies Used](#technologies-used)
-- [How to Launch the Project](#how-to-launch-the-project)
-- [Project Structure](#project-structure)
+- [Technologies utilisées](#technologies-utilisées)
+- [Lancer le projet](#lancer-le-projet)
+- [Structure du projet](#structure-du-projet)
 
 ---
 
-## Technologies Used
+## Technologies utilisées
 
-This section explains every technology in the stack, how it is used in the project, and how you can apply it in your own work.
+Cette section décrit chaque technologie du projet, son utilisation et comment l'appliquer dans vos propres développements.
 
 ---
 
 ### 1. PHP 8.1
 
-**What it is:** PHP is the server-side language that powers the application. PHP 8.1 introduces attributes, enums, readonly properties, and improved performance.
+**C'est quoi :** PHP est le langage côté serveur qui fait tourner l'application. PHP 8.1 introduit les attributs, les enums, les propriétés readonly et de meilleures performances.
 
-**How we use it:** All backend logic—controllers, entities, forms, services—is written in PHP. We use PHP 8 attributes for routing and Doctrine mapping instead of annotations or YAML.
+**Utilisation dans le projet :** Toute la logique backend (contrôleurs, entités, formulaires, services) est en PHP. On utilise les attributs PHP 8 pour le routage et le mapping Doctrine au lieu des annotations ou du YAML.
 
-**Example from the project:**
+**Exemple tiré du projet :**
 
 ```php
 // src/Controller/PageController.php
@@ -44,26 +44,26 @@ public function index(Request $request, PostRepository $postRepository): Respons
 }
 ```
 
-The `#[Route(...)]` attribute declares the URL and route name. PHP 8 attributes keep configuration close to the code.
+L'attribut `#[Route(...)]` déclare l'URL et le nom de la route. Les attributs PHP 8 gardent la configuration proche du code.
 
 ---
 
-### 2. Symfony 6.4 Framework
+### 2. Symfony 6.4
 
-**What it is:** Symfony is a PHP framework that provides HTTP handling, dependency injection, configuration, and integration with many components (Forms, Security, Mailer, etc.).
+**C'est quoi :** Symfony est un framework PHP qui fournit la gestion HTTP, l'injection de dépendances, la configuration et l'intégration de nombreux composants (Forms, Security, Mailer, etc.).
 
-**How we use it:** The entire application is built on Symfony. Controllers extend `AbstractController`, services are auto-wired, and configuration is in YAML.
+**Utilisation dans le projet :** Toute l'application repose sur Symfony. Les contrôleurs étendent `AbstractController`, les services sont auto-injectés et la configuration est en YAML.
 
-**Key concepts:**
+**Concepts clés :**
 
-- **Controllers:** Handle HTTP requests and return responses.
-- **Dependency injection:** Controllers receive repositories, the entity manager, and other services via constructor or method arguments.
-- **Configuration:** `config/packages/` holds YAML config for each component.
+- **Contrôleurs :** Gèrent les requêtes HTTP et renvoient des réponses.
+- **Injection de dépendances :** Les contrôleurs reçoivent les repositories, l'EntityManager et d'autres services via le constructeur ou les arguments de méthode.
+- **Configuration :** `config/packages/` contient la config YAML de chaque composant.
 
-**Example:**
+**Exemple :**
 
 ```php
-// Controllers receive services automatically
+// Les contrôleurs reçoivent les services automatiquement
 public function show(int $id, Request $request, PostRepository $postRepository, 
     PostAlertRepository $postAlertRepository, EntityManagerInterface $em): Response
 {
@@ -72,21 +72,21 @@ public function show(int $id, Request $request, PostRepository $postRepository,
 }
 ```
 
-Symfony injects `PostRepository`, `EntityManagerInterface`, etc. based on type hints—no manual wiring.
+Symfony injecte `PostRepository`, `EntityManagerInterface`, etc. selon les types déclarés, sans câblage manuel.
 
 ---
 
 ### 3. Doctrine ORM
 
-**What it is:** Doctrine is an Object-Relational Mapper (ORM) that maps PHP objects to database tables. You work with objects; Doctrine generates SQL.
+**C'est quoi :** Doctrine est un ORM (Object-Relational Mapper) qui mappe les objets PHP aux tables de base de données. On travaille avec des objets ; Doctrine génère le SQL.
 
-**How we use it:**
+**Utilisation dans le projet :**
 
-- **Entities:** PHP classes representing database tables (Post, User, Comment, Author, PostAlert).
-- **Repositories:** Classes for querying entities (e.g. `PostRepository::findPaginatedAndSearch`).
-- **Migrations:** Version-controlled schema changes.
+- **Entités :** Classes PHP représentant les tables (Post, User, Comment, Author, PostAlert).
+- **Repositories :** Classes pour interroger les entités (ex. `PostRepository::findPaginatedAndSearch`).
+- **Migrations :** Changements de schéma versionnés.
 
-**Example entity with Doctrine attributes:**
+**Exemple d'entité avec les attributs Doctrine :**
 
 ```php
 // src/Entity/Post.php
@@ -110,9 +110,9 @@ class Post
 }
 ```
 
-`#[ORM\Column]` defines a column; `#[ORM\ManyToOne]` and `#[ORM\OneToMany]` define relationships.
+`#[ORM\Column]` définit une colonne ; `#[ORM\ManyToOne]` et `#[ORM\OneToMany]` définissent les relations.
 
-**Example repository query:**
+**Exemple de requête dans un repository :**
 
 ```php
 // src/Repository/PostRepository.php
@@ -127,21 +127,21 @@ public function findPaginatedAndSearch(int $page = 1, ?string $search = null): a
         $qb->andWhere('(p.title LIKE :search OR p.content LIKE :search)')
             ->setParameter('search', '%' . trim($search) . '%');
     }
-    // ... pagination logic
+    // ... logique de pagination
 }
 ```
 
-Query Builder lets you build dynamic queries without raw SQL.
+Le Query Builder permet de construire des requêtes dynamiques sans SQL brut.
 
 ---
 
-### 4. Symfony Form Component
+### 4. Symfony Form
 
-**What it is:** A component for creating, validating, and rendering HTML forms. It binds form fields to PHP objects and handles CSRF.
+**C'est quoi :** Un composant pour créer, valider et afficher des formulaires HTML. Il lie les champs aux objets PHP et gère le CSRF.
 
-**How we use it:** All forms (comments, posts, registration, login) use Symfony Form. We define form types that map to entities.
+**Utilisation dans le projet :** Tous les formulaires (commentaires, articles, inscription, connexion) utilisent Symfony Form. On définit des types de formulaire mappés aux entités.
 
-**Example form type:**
+**Exemple de type de formulaire :**
 
 ```php
 // src/Form/PostType.php
@@ -171,7 +171,7 @@ class PostType extends AbstractType
 }
 ```
 
-In the controller:
+Dans le contrôleur :
 
 ```php
 $form = $this->createForm(PostType::class, $post);
@@ -182,17 +182,17 @@ if ($form->isSubmitted() && $form->isValid()) {
 }
 ```
 
-In Twig: `{{ form_start(form) }}`, `{{ form_row(form.title) }}`, etc.
+Dans Twig : `{{ form_start(form) }}`, `{{ form_row(form.title) }}`, etc.
 
 ---
 
 ### 5. Twig
 
-**What it is:** A templating engine for PHP. It separates logic from presentation and provides inheritance, filters, and functions.
+**C'est quoi :** Un moteur de templates pour PHP. Il sépare la logique de la présentation et fournit l'héritage, les filtres et les fonctions.
 
-**How we use it:** All HTML is in `.twig` files. We use `extends`, `block`, `path()`, `asset()`, and filters like `|date`, `|length`.
+**Utilisation dans le projet :** Tout le HTML est dans des fichiers `.twig`. On utilise `extends`, `block`, `path()`, `asset()` et des filtres comme `|date`, `|length`.
 
-**Example template:**
+**Exemple de template :**
 
 ```twig
 {# templates/page/index.html.twig #}
@@ -219,19 +219,19 @@ In Twig: `{{ form_start(form) }}`, `{{ form_row(form.title) }}`, etc.
 {% endblock %}
 ```
 
-- `path('app_index')` generates the URL for the route named `app_index`.
-- `post.author.firstName` accesses the related Author entity.
-- `|date('d/m/Y')` formats the date.
+- `path('app_index')` génère l'URL de la route nommée `app_index`.
+- `post.author.firstName` accède à l'entité Author liée.
+- `|date('d/m/Y')` formate la date.
 
 ---
 
 ### 6. Symfony Security
 
-**What it is:** Handles authentication (login) and authorization (who can access what). Supports multiple firewalls and role-based access.
+**C'est quoi :** Gère l'authentification (connexion) et l'autorisation (qui peut accéder à quoi). Supporte plusieurs firewalls et l'accès par rôles.
 
-**How we use it:** We have three firewalls—`admin`, `blogger`, and `main`—each with its own login path and target. Access is controlled by `ROLE_ADMIN`, `ROLE_BLOGGER`, and `ROLE_USER`.
+**Utilisation dans le projet :** Trois firewalls — `admin`, `blogger` et `main` — chacun avec son chemin de connexion et sa cible. L'accès est contrôlé par `ROLE_ADMIN`, `ROLE_BLOGGER` et `ROLE_USER`.
 
-**Example configuration:**
+**Exemple de configuration :**
 
 ```yaml
 # config/packages/security.yaml
@@ -259,24 +259,24 @@ security:
         - { path: ^/alerts, roles: ROLE_USER }
 ```
 
-In controllers:
+Dans les contrôleurs :
 
 ```php
 #[IsGranted('ROLE_ADMIN')]
 class AdminController extends AbstractController { ... }
 ```
 
-`#[IsGranted('ROLE_ADMIN')]` restricts the controller to admins.
+`#[IsGranted('ROLE_ADMIN')]` restreint le contrôleur aux admins.
 
 ---
 
 ### 7. Symfony Mailer
 
-**What it is:** Sends emails. Supports HTML and text templates, attachments, and async sending via Messenger.
+**C'est quoi :** Envoie des emails. Supporte les templates HTML et texte, les pièces jointes et l'envoi asynchrone via Messenger.
 
-**How we use it:** When an admin approves a post, we send an email to all subscribers of that author using `TemplatedEmail`.
+**Utilisation dans le projet :** Quand un admin approuve un article, on envoie un email à tous les abonnés de l'auteur avec `TemplatedEmail`.
 
-**Example from AdminController:**
+**Exemple tiré d'AdminController :**
 
 ```php
 $email = (new TemplatedEmail())
@@ -295,17 +295,17 @@ $email = (new TemplatedEmail())
 $mailer->send($email);
 ```
 
-Configure `MAILER_DSN` in `.env` (e.g. `smtp://user:pass@smtp.example.com:587`).
+Configurer `MAILER_DSN` dans `.env` (ex. `smtp://user:pass@smtp.example.com:587`).
 
 ---
 
 ### 8. Symfony Messenger
 
-**What it is:** A message bus for async processing. Handlers run in the background (e.g. sending emails, processing jobs).
+**C'est quoi :** Un bus de messages pour le traitement asynchrone. Les handlers s'exécutent en arrière-plan (envoi d'emails, jobs, etc.).
 
-**How we use it:** By default, `SendEmailMessage` is routed to the `async` transport, so emails can be sent asynchronously. Configure `MESSENGER_TRANSPORT_DSN` and run `php bin/console messenger:consume async`.
+**Utilisation dans le projet :** Par défaut, `SendEmailMessage` est routé vers le transport `async`, donc les emails peuvent être envoyés de façon asynchrone. Configurer `MESSENGER_TRANSPORT_DSN` et lancer `php bin/console messenger:consume async`.
 
-**Example config:**
+**Exemple de config :**
 
 ```yaml
 # config/packages/messenger.yaml
@@ -322,11 +322,11 @@ framework:
 
 ### 9. Symfony Asset Mapper
 
-**What it is:** Manages frontend assets (CSS, JS) without Webpack. Uses native ES modules and an import map. No build step in development.
+**C'est quoi :** Gère les assets frontend (CSS, JS) sans Webpack. Utilise les modules ES natifs et une import map. Pas d'étape de build en développement.
 
-**How we use it:** CSS and JS live in `assets/`. The main entrypoint is `assets/app.js`, which imports `./styles/app.css` and `./bootstrap.js`. Twig loads it via `{{ importmap('app') }}`.
+**Utilisation dans le projet :** CSS et JS sont dans `assets/`. Le point d'entrée principal est `assets/app.js`, qui importe `./styles/app.css` et `./bootstrap.js`. Twig le charge via `{{ importmap('app') }}`.
 
-**Example:**
+**Exemple :**
 
 ```javascript
 // assets/app.js
@@ -341,17 +341,17 @@ import './styles/app.css';
 {% endblock %}
 ```
 
-`importmap.php` defines the app entrypoint and third-party packages (Stimulus, Turbo).
+`importmap.php` définit le point d'entrée et les paquets tiers (Stimulus, Turbo).
 
 ---
 
 ### 10. Stimulus
 
-**What it is:** A lightweight JavaScript framework by Hotwired. It connects JavaScript behavior to HTML via `data-controller`, `data-action`, and `data-*-target` attributes.
+**C'est quoi :** Un framework JavaScript léger par Hotwired. Il relie le comportement JavaScript au HTML via les attributs `data-controller`, `data-action` et `data-*-target`.
 
-**How we use it:** The comment form uses a Stimulus controller to submit via AJAX and update the page without a full reload.
+**Utilisation dans le projet :** Le formulaire de commentaire utilise un contrôleur Stimulus pour soumettre en AJAX et mettre à jour la page sans rechargement complet.
 
-**Example controller:**
+**Exemple de contrôleur :**
 
 ```javascript
 // assets/controllers/comment_form_controller.js
@@ -374,12 +374,12 @@ export default class extends Controller {
             },
         });
         const data = await response.json();
-        // Update DOM with new comment and form
+        // Mise à jour du DOM avec le nouveau commentaire et le formulaire
     }
 }
 ```
 
-**In the template:**
+**Dans le template :**
 
 ```twig
 {{ form_start(form, {
@@ -390,25 +390,25 @@ export default class extends Controller {
 }) }}
 ```
 
-`data-controller="comment-form"` loads the controller; `data-action="submit.prevent->comment-form#handleSubmit"` calls `handleSubmit` on form submit, with `prevent` stopping the default submit.
+`data-controller="comment-form"` charge le contrôleur ; `data-action="submit.prevent->comment-form#handleSubmit"` appelle `handleSubmit` à la soumission, avec `prevent` qui bloque l'envoi par défaut.
 
 ---
 
 ### 11. Turbo (Hotwired Turbo)
 
-**What it is:** Turbo speeds up navigation by fetching pages via AJAX and swapping only the `<body>` content. It can also handle Turbo Streams for partial updates.
+**C'est quoi :** Turbo accélère la navigation en récupérant les pages en AJAX et en remplaçant uniquement le contenu du `<body>`. Il gère aussi les Turbo Streams pour des mises à jour partielles.
 
-**How we use it:** Turbo is loaded via the import map. Page links and form submissions can be enhanced by Turbo for faster navigation. The comment form disables Turbo (`data-turbo="false"`) and uses our Stimulus controller for finer control.
+**Utilisation dans le projet :** Turbo est chargé via l'import map. Les liens et formulaires peuvent être améliorés par Turbo pour une navigation plus rapide. Le formulaire de commentaire désactive Turbo (`data-turbo="false"`) et utilise notre contrôleur Stimulus pour un contrôle plus fin.
 
 ---
 
 ### 12. Doctrine Migrations
 
-**What it is:** Version-controlled database schema changes. Each migration is a PHP class that defines `up()` and `down()`.
+**C'est quoi :** Changements de schéma de base de données versionnés. Chaque migration est une classe PHP avec `up()` et `down()`.
 
-**How we use it:** After changing entities, run `php bin/console make:migration` to generate a migration, then `php bin/console doctrine:migrations:migrate` to apply it.
+**Utilisation dans le projet :** Après modification des entités, exécuter `php bin/console make:migration` pour générer une migration, puis `php bin/console doctrine:migrations:migrate` pour l'appliquer.
 
-**Example migration:**
+**Exemple de migration :**
 
 ```php
 // migrations/Version20260317000000.php
@@ -422,38 +422,38 @@ public function up(Schema $schema): void
 
 ### 13. Composer
 
-**What it is:** PHP’s dependency manager. `composer.json` lists packages; `composer.lock` pins versions for reproducible installs.
+**C'est quoi :** Le gestionnaire de dépendances PHP. `composer.json` liste les paquets ; `composer.lock` fige les versions pour des installations reproductibles.
 
-**How we use it:** Run `composer install` to install dependencies. Dev tools (Maker, Web Profiler) are in `require-dev`.
+**Utilisation dans le projet :** Exécuter `composer install` pour installer les dépendances. Les outils de dev (Maker, Web Profiler) sont dans `require-dev`.
 
 ---
 
 ### 14. PHPUnit
 
-**What it is:** PHP’s testing framework. Used for unit and functional tests.
+**C'est quoi :** Le framework de tests PHP. Utilisé pour les tests unitaires et fonctionnels.
 
-**How we use it:** Tests live in `tests/`. Run `php bin/phpunit` to execute them. Functional tests can use `WebTestCase` to simulate HTTP requests.
-
----
-
-### 15. PostgreSQL (or MySQL/SQLite)
-
-**What it is:** The database. Doctrine supports PostgreSQL, MySQL, MariaDB, and SQLite.
-
-**How we use it:** `DATABASE_URL` in `.env` defines the connection. The project includes `compose.yaml` for a PostgreSQL container.
+**Utilisation dans le projet :** Les tests sont dans `tests/`. Exécuter `php bin/phpunit` pour les lancer. Les tests fonctionnels peuvent utiliser `WebTestCase` pour simuler des requêtes HTTP.
 
 ---
 
-## How to Launch the Project
+### 15. PostgreSQL (ou MySQL/SQLite)
 
-### Prerequisites
+**C'est quoi :** La base de données. Doctrine supporte PostgreSQL, MySQL, MariaDB et SQLite.
+
+**Utilisation dans le projet :** `DATABASE_URL` dans `.env` définit la connexion. Le projet inclut `compose.yaml` pour un conteneur PostgreSQL.
+
+---
+
+## Lancer le projet
+
+### Prérequis
 
 - PHP 8.1+
 - Composer
-- PostgreSQL (or MySQL/SQLite)
-- Symfony CLI (optional, for `symfony server:start`)
+- PostgreSQL (ou MySQL/SQLite)
+- Symfony CLI (optionnel, pour `symfony server:start`)
 
-### 1. Clone and install dependencies
+### 1. Cloner et installer les dépendances
 
 ```bash
 git clone https://github.com/Eddy-etame/tech-blog.git
@@ -461,96 +461,96 @@ cd tech-blog
 composer install
 ```
 
-### 2. Configure environment
+### 2. Configurer l'environnement
 
 ```bash
 cp .env.example .env
 ```
 
-Edit `.env` and set:
+Modifier `.env` et définir :
 
-- `APP_SECRET`: A random 32-character string
-- `DATABASE_URL`: Your database connection string
+- `APP_SECRET` : une chaîne aléatoire de 32 caractères
+- `DATABASE_URL` : la chaîne de connexion à la base de données
 
-Example for PostgreSQL:
+Exemple pour PostgreSQL :
 
 ```
 DATABASE_URL="postgresql://app:password@127.0.0.1:5432/tech_blog?serverVersion=16&charset=utf8"
 ```
 
-Example for MySQL:
+Exemple pour MySQL :
 
 ```
 DATABASE_URL="mysql://app:password@127.0.0.1:3306/tech_blog?serverVersion=8.0&charset=utf8mb4"
 ```
 
-### 3. Create the database and run migrations
+### 3. Créer la base de données et exécuter les migrations
 
 ```bash
 php bin/console doctrine:database:create
 php bin/console doctrine:migrations:migrate
 ```
 
-### 4. (Optional) Seed sample data
+### 4. (Optionnel) Charger des données de démonstration
 
 ```bash
 php bin/console app:seed-data
 ```
 
-### 5. Start the web server
+### 5. Démarrer le serveur web
 
-**Option A – Symfony CLI (recommended):**
+**Option A – Symfony CLI (recommandé) :**
 
 ```bash
 symfony server:start
 ```
 
-Use the URL shown (typically `http://127.0.0.1:8001`). Do not use port 8000 unless configured; another service may use it and assets may fail.
+Utiliser l'URL affichée (généralement `http://127.0.0.1:8001`). Ne pas utiliser le port 8000 sauf configuration spécifique ; un autre service peut l'utiliser et les assets peuvent échouer.
 
-**Option B – PHP built-in server:**
+**Option B – Serveur PHP intégré :**
 
 ```bash
 php -S 127.0.0.1:8001 -t public
 ```
 
-### 6. (Optional) Run with Docker
+### 6. (Optionnel) Lancer avec Docker
 
 ```bash
 docker compose up -d
 ```
 
-Then set `DATABASE_URL` to match the Docker database (e.g. `postgresql://app:!ChangeMe!@database:5432/app`).
+Puis adapter `DATABASE_URL` pour la base Docker (ex. `postgresql://app:!ChangeMe!@database:5432/app`).
 
 ---
 
-## Project Structure
+## Structure du projet
 
 ```
 tech-blog/
-├── assets/                 # Frontend assets (CSS, JS, Stimulus controllers)
-├── config/                 # Symfony configuration
-│   └── packages/           # Per-component config (security, doctrine, etc.)
-├── migrations/             # Doctrine migrations
-├── public/                 # Web root (index.php, assets output)
+├── assets/                 # Assets frontend (CSS, JS, contrôleurs Stimulus)
+├── config/                 # Configuration Symfony
+│   └── packages/           # Config par composant (security, doctrine, etc.)
+├── migrations/             # Migrations Doctrine
+├── public/                 # Racine web (index.php, sortie des assets)
 ├── src/
-│   ├── Controller/         # HTTP controllers
-│   ├── Entity/             # Doctrine entities
-│   ├── Form/               # Form types
-│   ├── Repository/         # Doctrine repositories
-│   └── EventListener/      # Event listeners (e.g. auth failure)
-├── templates/              # Twig templates
-│   ├── admin/              # Admin dashboard templates
-│   ├── blogger/            # Blogger dashboard templates
-│   ├── page/               # Public pages (home, post show)
-│   └── email/              # Email templates
-├── tests/                  # PHPUnit tests
-├── .env.example            # Environment template (no secrets)
-├── composer.json           # PHP dependencies
-└── importmap.php           # JavaScript import map
+│   ├── Controller/         # Contrôleurs HTTP
+│   ├── Entity/             # Entités Doctrine
+│   ├── Form/               # Types de formulaires
+│   ├── Repository/         # Repositories Doctrine
+│   └── EventListener/      # Écouteurs d'événements (ex. échec d'auth)
+├── templates/              # Templates Twig
+│   ├── admin/              # Templates du tableau de bord admin
+│   ├── blogger/            # Templates du tableau de bord blogger
+│   ├── page/               # Pages publiques (accueil, affichage article)
+│   └── email/              # Templates d'emails
+├── tests/                  # Tests PHPUnit
+├── .env.example            # Modèle d'environnement (sans secrets)
+├── composer.json           # Dépendances PHP
+└── importmap.php           # Import map JavaScript
 ```
 
 ---
 
-## License
+## Licence
 
-Proprietary.
+Propriétaire.
